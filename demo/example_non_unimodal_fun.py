@@ -3,7 +3,7 @@ Author: Andrijan Ostrun
 Year:   2017.
 """
 from models import *
-from nonlinear-optimizations import *
+from nonlinear_optimizations import *
 import collections
 
 #########################################################
@@ -32,17 +32,17 @@ for i in range(3, 4):
 
     # print("Simpleks:")
     tmp.append(simplex_nelder_mead(x0, fun, print_stats=False))
-    tmp.append(fun.iterations)
+    tmp.append('iterations: ' + str(fun.iterations))
     results['simplex'] = tmp.copy()
     tmp.clear()
     # print("Hooke-Jeeves:")
     tmp.append(hooke_jeeves(x0, fun, print_stats=False))
-    tmp.append(fun.iterations)
+    tmp.append('iterations: ' + str(fun.iterations))
     results['hookes'] = tmp.copy()
     tmp.clear()
     #print("Coordinate axis:")
     tmp.append(coordinate_axis_search(x0, fun, print_stats=False))
-    tmp.append(fun.iterations)
+    tmp.append('iterations: ' + str(fun.iterations))
     results['coordinate'] = tmp.copy()
     tmp.clear()
 

@@ -3,7 +3,8 @@ Author: Andrijan Ostrun
 Year:   2017.
 """
 from models import *
-from algorithms import *
+from nonlinear_optimizations import *
+from nonlinear_optimizations.function import Function
 
 
 #########################################################
@@ -20,12 +21,13 @@ from algorithms import *
 #
 #########################################################
 
-fun = function(fun_1zad)
+fun = Function(fun_1zad)
 x0 = [10]
 results = {}
 
 print("Golden cut:")
-print("\nResulting point (interval): " + golden_section_search(x0, fun).__str__())
+print("\nResulting point (interval): " +
+      golden_section_search(x0, fun).__str__())
 results['golden'] = fun.iterations
 print("################################################\n")
 
@@ -45,7 +47,7 @@ results['Co-Ax'] = fun.iterations
 print("################################################\n")
 
 print("Cost Function calls:")
-for k,v in results.items():
+for k, v in results.items():
     print("\t {} : {}".format(k, v))
 
 ############################################################

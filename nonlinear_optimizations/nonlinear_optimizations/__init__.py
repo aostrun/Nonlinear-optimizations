@@ -8,7 +8,7 @@ ITER_LIMIT = 50000
 ###########################GOLDEN SECTION SEARCH START#######################
 
 
-def golden_section_search(var1, func, point=True, e=EPSILON, idx=0, print_stats=True):
+def golden_section_search(var1, func, point=True, e=EPSILON, idx=0, print_stats=False):
     """
     Golden section search algorithm
     :param var1: Can be list with two elements representing the interval or can be single number from which we find unimodal interval.
@@ -112,7 +112,7 @@ def _unimodal_interval(point, idx, func, h=1):
 
 ###########################SIMPLEX NELDER-MEAD START#######################
 
-def simplex_nelder_mead(point, func, alpha=1, beta=0.5, gama=2, simplex_step=1, e=EPSILON, iteration_limit=ITER_LIMIT, print_stats=True):
+def simplex_nelder_mead(point, func, alpha=1, beta=0.5, gama=2, simplex_step=1, e=EPSILON, iteration_limit=ITER_LIMIT, print_stats=False):
     """
     Simplex Nelder-Mead optimization algorithm
     :param point: Starting point from which algorithm starts
@@ -299,7 +299,7 @@ def _simplex_max_idx(simplex, func):
 
 ###########################HOOKE-JEEVES START################################
 
-def hooke_jeeves(point, func, dx=0.5, e=EPSILON, print_stats=True):
+def hooke_jeeves(point, func, dx=0.5, e=EPSILON, print_stats=False):
     """
     Hooke-Jeeves optimization algorithm
     :param point: Starting point from which algorithm starts
@@ -358,7 +358,7 @@ def _hooke_jeeves_search(xp, func, dx):
 
 ###########################COORDINATE DESCENT SEARCH START######################
 
-def coordinate_axis_search(point, func, e=EPSILON, print_stats=True):
+def coordinate_axis_search(point, func, e=EPSILON, print_stats=False):
 
     if not isinstance(func, Function):
         raise ValueError("func parameter has to be of type Function")

@@ -4,7 +4,7 @@ Year:   2017.
 """
 
 from models import *
-from nonlinear-optimizations import *
+from nonlinear_optimizations import *
 import collections
 
 #########################################################
@@ -20,7 +20,6 @@ import collections
 #   -> Simplex Nelder-Mead minimization
 #
 #########################################################
-
 table = collections.OrderedDict()
 for i in range(0, 1):
     fun = functions[i]
@@ -33,7 +32,7 @@ for i in range(0, 1):
         # print("Simpleks:")
         tmp.append(simplex_nelder_mead(
             x0, fun, simplex_step=j+1, print_stats=False))
-        tmp.append(fun.iterations)
+        tmp.append('iterations: ' + str(fun.iterations))
         results['simplex, d={}'.format(j+1)] = tmp.copy()
         tmp.clear()
 

@@ -2,9 +2,10 @@
 Author: Andrijan Ostrun
 Year:   2017.
 """
-from .models import *
-from nonlinear-optimizations import *
+from models import *
+from nonlinear_optimizations import *
 import collections
+from tqdm import tqdm
 
 #########################################################
 #   Example 2:
@@ -21,7 +22,7 @@ import collections
 #########################################################
 
 table = collections.OrderedDict()
-for i in range(0, 4):
+for i in tqdm(range(0, 4)):
     fun = functions[i]
     x0 = fun.default_point
 
@@ -30,17 +31,17 @@ for i in range(0, 4):
 
     # print("Simpleks:")
     tmp.append(simplex_nelder_mead(x0, fun, print_stats=False))
-    tmp.append(fun.iterations)
+    tmp.append('iterations: ' + str(fun.iterations))
     results['simplex'] = tmp.copy()
     tmp.clear()
     # print("Hooke-Jeeves:")
     tmp.append(hooke_jeeves(x0, fun, print_stats=False))
-    tmp.append(fun.iterations)
+    tmp.append('iterations: ' + str(fun.iterations))
     results['hooke-jeeves'] = tmp.copy()
     tmp.clear()
     #print("Coordinate axis:")
     tmp.append(coordinate_axis_search(x0, fun, print_stats=False))
-    tmp.append(fun.iterations)
+    tmp.append('iterations: ' + str(fun.iterations))
     results['coordinate-axis'] = tmp.copy()
     tmp.clear()
 

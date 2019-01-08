@@ -1,7 +1,7 @@
 import setuptools
 
-setuptools.setup(name='nonlinear-optimizations',
-                 version='0.2',
+setuptools.setup(name='nonlinear_optimizations',
+                 version='0.1',
                  description='Nonlinear-optimization algorithms',
                  url='https://github.com/aostrun/Nonlinear-optimizations',
                  author='Andrijan Ostrun',

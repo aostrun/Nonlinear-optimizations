@@ -1,5 +1,5 @@
 from math import *
-
+from nonlinear_optimizations.function import Function
 
 #   Functions:
 #   ->f0 =  100 * (x[1] - x[0]**2)**2 + (1-x[0])**2 (Rosenbrock's "Banana" function)

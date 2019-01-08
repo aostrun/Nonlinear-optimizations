@@ -4,10 +4,11 @@ Year:   2017.
 """
 
 from models import *
-from nonlinear-optimizations import *
+from nonlinear_optimizations import *
 import random
 import collections
 from lab import timing
+from tqdm import tqdm
 
 #########################################################
 #   Example 5:
@@ -15,8 +16,8 @@ from lab import timing
 #   function and do N iterations of the optimization algorithm
 #   with the random starting point and try to find global minimum.
 #   At the end we check how many iterations actually reached the
-#   minimum of the function while other iterations reached one of
-#   the local minimums.
+#   global minimum of the function while other iterations reached
+#   one of the local minimums.
 #
 #   function: f5
 #   -> Simplex Nelder-Mead minimization
@@ -30,15 +31,15 @@ def example_5():
 
     table = collections.OrderedDict()
     # Number of iterations
-    total_iter = 2000
+    total_iter = 100
     # Global minimum counter
     found_min = 0
     # Every value bellow min_treshold is treated as global function minimum
-    min_treshold = 10e-4
+    min_treshold = 10e-2
 
     fun = functions[4]
 
-    for i in range(0, total_iter):
+    for i in tqdm(range(0, total_iter)):
 
         x0 = [random.uniform(-50, 50), random.uniform(-50, 50)]
 
@@ -51,7 +52,7 @@ def example_5():
             x0, fun, simplex_step=1, print_stats=False)
         #min_ans = hooke_jeeves(x0, fun, print_stats=False)
         tmp.append(min_ans)
-        tmp.append(fun.iterations)
+        tmp.append('iterations' + str(fun.iterations))
         min_value = fun.calc(*min_ans)
         if min_value <= min_treshold:
             found_min += 1
