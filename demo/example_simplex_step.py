@@ -4,7 +4,7 @@ Year:   2017.
 """
 
 from models import *
-from algorithms import *
+from nonlinear-optimizations import *
 import collections
 
 #########################################################
@@ -30,8 +30,9 @@ for i in range(0, 1):
     for j in range(0, 20):
         tmp = []
 
-        #print("Simpleks:")
-        tmp.append(simplex_nelder_mead(x0, fun, simplex_step=j+1, print_stats=False))
+        # print("Simpleks:")
+        tmp.append(simplex_nelder_mead(
+            x0, fun, simplex_step=j+1, print_stats=False))
         tmp.append(fun.iterations)
         results['simplex, d={}'.format(j+1)] = tmp.copy()
         tmp.clear()
@@ -39,7 +40,7 @@ for i in range(0, 1):
     table["f{}".format(i + 1)] = results.copy()
     results.clear()
 
-for k,v in table.items():
+for k, v in table.items():
     print(k + ":")
     for k1, v1 in v.items():
         print("\t" + k1, v1)

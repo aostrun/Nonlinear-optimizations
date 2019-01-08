@@ -3,7 +3,7 @@ Author: Andrijan Ostrun
 Year:   2017.
 """
 from models import *
-from algorithms import *
+from nonlinear-optimizations import *
 import collections
 
 #########################################################
@@ -25,17 +25,17 @@ import collections
 table = collections.OrderedDict()
 for i in range(3, 4):
     fun = functions[i]
-    x0 = [5,5]
+    x0 = [5, 5]
 
     results = {}
     tmp = []
 
-    #print("Simpleks:")
+    # print("Simpleks:")
     tmp.append(simplex_nelder_mead(x0, fun, print_stats=False))
     tmp.append(fun.iterations)
     results['simplex'] = tmp.copy()
     tmp.clear()
-    #print("Hooke-Jeeves:")
+    # print("Hooke-Jeeves:")
     tmp.append(hooke_jeeves(x0, fun, print_stats=False))
     tmp.append(fun.iterations)
     results['hookes'] = tmp.copy()
@@ -49,7 +49,7 @@ for i in range(3, 4):
     table["f{}".format(i+1)] = results.copy()
     results.clear()
 
-for k,v in table.items():
+for k, v in table.items():
     print(k + ":")
     for k1, v1 in v.items():
         print("\t" + k1, v1)

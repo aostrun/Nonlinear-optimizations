@@ -10,6 +10,7 @@ def test_fun:
     
 """
 
+
 def timing(f):
     def wrap(*args):
         time1 = time.time()

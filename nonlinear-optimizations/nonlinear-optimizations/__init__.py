@@ -1,10 +1,13 @@
 import math
 import copy
+from .function import Function
 
 EPSILON = 10e-6
 ITER_LIMIT = 50000
 
 ###########################GOLDEN SECTION SEARCH START#######################
+
+
 def golden_section_search(var1, func, point=True, e=EPSILON, idx=0, print_stats=True):
     """
     Golden section search algorithm
@@ -19,12 +22,15 @@ def golden_section_search(var1, func, point=True, e=EPSILON, idx=0, print_stats=
     :return: Interval in which function reaches its minimum.
     """
 
-    #func.reset_iterations()
+    # func.reset_iterations()
+
+    if not isinstance(func, Function):
+        raise ValueError("func parameter has to be of type Function")
 
     if point == False and isinstance(var1, list) and len(var1) == 2:
-        [a,b] = var1
+        [a, b] = var1
     elif point == True and isinstance(var1, list):
-        [a,b] = unimodal_interval(var1, idx, func)
+        [a, b] = _unimodal_interval(var1, idx, func)
 
     k = 0.5 * (math.sqrt(5) - 1)
 
@@ -50,14 +56,19 @@ def golden_section_search(var1, func, point=True, e=EPSILON, idx=0, print_stats=
             fc = fd
             fd = func.calc(*d)
         if print_stats == True:
-            print("a: {0} c: {1} d: {2} b: {3} fc: {4} fd: {5}".format(a[idx], c[idx], d[idx], b[idx], fc, fd))
+            print("a: {0} c: {1} d: {2} b: {3} fc: {4} fd: {5}".format(
+                a[idx], c[idx], d[idx], b[idx], fc, fd))
 
-    return [a,b]
-    #return (a + b) / 2
+    return [a, b]
+    # return (a + b) / 2
 
-def unimodal_interval(point, idx, func, h=1):
 
-    #if func.dim != 1:
+def _unimodal_interval(point, idx, func, h=1):
+
+    if not isinstance(func, Function):
+        raise ValueError("func parameter has to be of type Function")
+
+    # if func.dim != 1:
     #   raise AttributeError("Unimodal search doesn't apply to multi dimension functions!")
 
     l = copy.deepcopy(point)
@@ -99,10 +110,9 @@ def unimodal_interval(point, idx, func, h=1):
 ###########################GOLDEN SECTION SEARCH END#########################
 
 
-
 ###########################SIMPLEX NELDER-MEAD START#######################
 
-def simplex_nelder_mead(point, func, alpha=1, beta=0.5, gama=2, simplex_step=1, e=EPSILON, print_stats=True):
+def simplex_nelder_mead(point, func, alpha=1, beta=0.5, gama=2, simplex_step=1, e=EPSILON, iteration_limit=ITER_LIMIT, print_stats=True):
     """
     Simplex Nelder-Mead optimization algorithm
     :param point: Starting point from which algorithm starts
@@ -116,12 +126,15 @@ def simplex_nelder_mead(point, func, alpha=1, beta=0.5, gama=2, simplex_step=1, 
     :return: Point in which algorithm found the minimum of the function
     """
 
+    if not isinstance(func, Function):
+        raise ValueError("func parameter has to be of type Function")
+
     simplex = []
     step = simplex_step
 
     func.reset_iterations()
 
-    #pocetni simpleks:
+    # pocetni simpleks:
     simplex.append(point)
     n = len(point)
     tmp_a = (step / (n * math.sqrt(2)))
@@ -140,30 +153,30 @@ def simplex_nelder_mead(point, func, alpha=1, beta=0.5, gama=2, simplex_step=1, 
     centroid = None
 
     while True:
-        [h, h_val] = simplex_max_idx(simplex, func)
-        [l, l_val] = simplex_min_idx(simplex, func)
+        [h, h_val] = _simplex_max_idx(simplex, func)
+        [l, l_val] = _simplex_min_idx(simplex, func)
 
-        #print(h)
-        #print(l)
+        # print(h)
+        # print(l)
 
-        #Find centroid
-        centroid = find_centroid(simplex, h)
+        # Find centroid
+        centroid = _find_centroid(simplex, h)
         if print_stats == True:
             print("Centroid: " + str(centroid))
 
-        error = stop_condition(simplex, centroid, func)
-        if error < e or func.iterations > ITER_LIMIT:
+        error = _stop_condition(simplex, centroid, func)
+        if error < e or func.iterations > iteration_limit:
             break
 
-        #Redlection
-        reflection_val = reflection(centroid, simplex[h], alpha)
+        # Redlection
+        reflection_val = _expansion(centroid, simplex[h], alpha)
         if print_stats == True:
             print("Reflection: " + str(reflection_val))
 
         f_reflection = func.calc(*reflection_val)
         #print("functions {} {}".format(f_reflection, l_val))
         if f_reflection < l_val:
-            expansion_val = expansion(centroid, reflection_val, gama)
+            expansion_val = _expansion(centroid, reflection_val, gama)
             if print_stats == True:
                 print("Expansion: " + str(expansion_val))
             f_expansion = func.calc(*expansion_val)
@@ -172,41 +185,44 @@ def simplex_nelder_mead(point, func, alpha=1, beta=0.5, gama=2, simplex_step=1, 
             else:
                 simplex[h] = reflection_val
         else:
-            if check_reflection(f_reflection, simplex, h, func):
+            if _check_reflection(f_reflection, simplex, h, func):
                 if f_reflection < h_val:
                     simplex[h] = reflection_val
-                contraction_val = contraction(centroid, simplex[h], beta)
+                contraction_val = _contraction(centroid, simplex[h], beta)
                 if print_stats == True:
                     print("Contraction: " + str(contraction_val))
                 f_contraction = func.calc(*contraction_val)
                 if f_contraction < h_val:
                     simplex[h] = contraction_val
                 else:
-                    shift_simplex(simplex, l)
+                    _shift_simplex(simplex, l)
             else:
                 simplex[h] = reflection_val
 
     return centroid
 
-def stop_condition(simplex, centroid, fun):
+
+def _stop_condition(simplex, centroid, fun):
     error = 0
     centroid_val = fun.calc(*centroid)
     for point in simplex:
         point_val = fun.calc(*point)
-        error +=  (point_val - centroid_val)**2 # Sumiraj kvadratne razlike tocaka simpleksa i centroide
+        # Sumiraj kvadratne razlike tocaka simpleksa i centroide
+        error += (point_val - centroid_val)**2
     error *= 1/(len(simplex)-1)     # error * 1/n
     error = error**(0.5)
     return error
 
 
-def shift_simplex(simplex, l):
+def _shift_simplex(simplex, l):
     for i in range(0, len(simplex)):
         if i == l:
             continue
         for j in range(0, len(simplex)-1):
             simplex[i][j] = 0.5 * (simplex[i][j] + simplex[l][j])
 
-def check_reflection(f_reflection, simplex, h, func):
+
+def _check_reflection(f_reflection, simplex, h, func):
     for i in range(0, len(simplex)):
         if i == h:
             continue
@@ -215,28 +231,32 @@ def check_reflection(f_reflection, simplex, h, func):
             return False
     return True
 
-def reflection(centroid, max, alpha):
+
+def _expansion(centroid, max, alpha):
     tmp = []
     for i in range(0, len(centroid)):
         val = (1+alpha) * centroid[i] - alpha * max[i]
         tmp.append(val)
     return tmp
 
-def expansion(centroid, reflection, gama):
+
+def _expansion(centroid, reflection, gama):
     tmp = []
     for i in range(0, len(centroid)):
         val = (1-gama) * centroid[i] + gama * reflection[i]
         tmp.append(val)
     return tmp
 
-def contraction(centroid, max, beta):
+
+def _contraction(centroid, max, beta):
     tmp = []
     for i in range(0, len(centroid)):
         val = (1-beta) * centroid[i] + beta * max[i]
         tmp.append(val)
     return tmp
 
-def find_centroid(simplex, max_idx):
+
+def _find_centroid(simplex, max_idx):
     tmp = []
     for i in range(0, len(simplex)-1):
         tmp.append(0)
@@ -252,7 +272,8 @@ def find_centroid(simplex, max_idx):
 
     return tmp
 
-def simplex_min_idx(simplex, func):
+
+def _simplex_min_idx(simplex, func):
     min = func.calc(*simplex[0])
     min_idx = 0
     for i in range(1, len(simplex)):
@@ -262,7 +283,8 @@ def simplex_min_idx(simplex, func):
             min_idx = i
     return [min_idx, min]
 
-def simplex_max_idx(simplex, func):
+
+def _simplex_max_idx(simplex, func):
     max = func.calc(*simplex[0])
     max_idx = 0
     for i in range(1, len(simplex)):
@@ -288,6 +310,9 @@ def hooke_jeeves(point, func, dx=0.5, e=EPSILON, print_stats=True):
     :return: Point in which algorithm found the minimum of the function
     """
 
+    if not isinstance(func, Function):
+        raise ValueError("func parameter has to be of type Function")
+
     x0 = copy.deepcopy(point)
     xb = copy.deepcopy(point)
     xp = copy.deepcopy(point)
@@ -298,7 +323,7 @@ def hooke_jeeves(point, func, dx=0.5, e=EPSILON, print_stats=True):
     while True:
         if dx <= e:
             break
-        xn = hooke_jeeves_search(xp, func, dx)
+        xn = _hooke_jeeves_search(xp, func, dx)
         f_xn = func.calc(*xn)
         f_xb = func.calc(*xb)
         if f_xn < f_xb:
@@ -314,16 +339,17 @@ def hooke_jeeves(point, func, dx=0.5, e=EPSILON, print_stats=True):
 
     return xb
 
-def hooke_jeeves_search(xp, func, dx):
+
+def _hooke_jeeves_search(xp, func, dx):
     x = copy.deepcopy(xp)
     for i in range(0, len(xp)):
         p = func.calc(*x)
         x[i] += dx
         n = func.calc(*x)
-        if n>p:
+        if n > p:
             x[i] -= 2*dx
             n = func.calc(*x)
-            if n>p:
+            if n > p:
                 x[i] += dx
     return x
 
@@ -332,7 +358,10 @@ def hooke_jeeves_search(xp, func, dx):
 
 ###########################COORDINATE DESCENT SEARCH START######################
 
-def coordinate_axis_search(point, func ,e=EPSILON, print_stats=True):
+def coordinate_axis_search(point, func, e=EPSILON, print_stats=True):
+
+    if not isinstance(func, Function):
+        raise ValueError("func parameter has to be of type Function")
 
     i = 0
     dim = len(point)
@@ -342,19 +371,20 @@ def coordinate_axis_search(point, func ,e=EPSILON, print_stats=True):
     while True:
         idx = i % dim
         old = copy.deepcopy(point)
-        [a,b] = golden_section_search(point, func, idx = idx, print_stats=False)
-        #print(a)
-        #print(b)
+        [a, b] = golden_section_search(point, func, idx=idx, print_stats=False)
+        # print(a)
+        # print(b)
         point[idx] = (a[idx] + b[idx]) / 2
-        i+=1
+        i += 1
 
         #print("\t {}".format(point))
-        if check_error(point, old):
-            break;
+        if _check_error(point, old):
+            break
 
     return point
 
-def check_error(point_new, point_old, e=EPSILON):
+
+def _check_error(point_new, point_old, e=EPSILON):
     for i in range(0, len(point_new)):
         if abs(point_new[i] - point_old[i]) > e:
             return False

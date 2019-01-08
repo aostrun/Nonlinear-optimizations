@@ -2,8 +2,8 @@
 Author: Andrijan Ostrun
 Year:   2017.
 """
-from models import *
-from algorithms import *
+from .models import *
+from nonlinear-optimizations import *
 import collections
 
 #########################################################
@@ -28,12 +28,12 @@ for i in range(0, 4):
     results = collections.OrderedDict()
     tmp = []
 
-    #print("Simpleks:")
+    # print("Simpleks:")
     tmp.append(simplex_nelder_mead(x0, fun, print_stats=False))
     tmp.append(fun.iterations)
     results['simplex'] = tmp.copy()
     tmp.clear()
-    #print("Hooke-Jeeves:")
+    # print("Hooke-Jeeves:")
     tmp.append(hooke_jeeves(x0, fun, print_stats=False))
     tmp.append(fun.iterations)
     results['hooke-jeeves'] = tmp.copy()
@@ -47,7 +47,7 @@ for i in range(0, 4):
     table["f{}".format(i+1)] = results.copy()
     results.clear()
 
-for k,v in table.items():
+for k, v in table.items():
     print(k + ":")
     for k1, v1 in v.items():
         print("\t" + k1, v1)
